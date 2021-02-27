@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Card, Form, Button, Body, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
+import { Link, useHistory } from "react-router-dom";
 
 export default function SignUp() {
   const emailRef = useRef();
@@ -9,8 +10,9 @@ export default function SignUp() {
   const { signup, currentUser } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (passwordRef.current.value !== confirmPasswordRef.current.value) {
       return setError("Passwords do not match");
@@ -18,7 +20,8 @@ export default function SignUp() {
     try {
       setError("");
       setLoading(true);
-      signup(emailRef.current.value, passwordRef.current.value);
+      await signup(emailRef.current.value, passwordRef.current.value);
+      history.push("/dashboard");
     } catch {
       setError("Could not create an account!");
       setLoading(false);
@@ -30,9 +33,9 @@ export default function SignUp() {
         <Card.Body>
           <h2 className="text-center mb-4">Sign Up</h2>
           {error && <Alert variant="danger">{error}</Alert>}
-          {currentUser && (
+          {/* {currentUser && (
             <Alert variant="danger">Logged in as "{currentUser.email}"</Alert>
-          )}
+          )} */}
           <Form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="EmailLabel">Email </label>
@@ -69,9 +72,16 @@ export default function SignUp() {
                 placeholder="Enter Confirm password"
               />
             </div>
-            <button type="submit" className="btn btn-primary btn-block">
-              Launch modal
+            <button
+              disabled={loading}
+              type="submit"
+              className="btn btn-primary btn-block"
+            >
+              Sign up
             </button>
+            <p>
+              Already have an account? <Link to="/signin">Sign In</Link>
+            </p>
           </Form>
         </Card.Body>
       </Card>
