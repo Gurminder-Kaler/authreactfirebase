@@ -1,29 +1,41 @@
 import React, { useRef, useState } from "react";
-import { Card, Form, Button, Body } from "react-bootstrap";
+import { Card, Form, Button, Body, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function SignUp() {
   const emailRef = useRef();
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
-  const { signup } = useAuth();
-  const { error, setError } = useState("");
+  const { signup, currentUser } = useAuth();
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (passwordRef.current.value !== confirmPasswordRef.current.value) {
       return setError("Passwords do not match");
     }
-    signup(emailRef.current.value, passwordRef.current.value);
+    try {
+      setError("");
+      setLoading(true);
+      signup(emailRef.current.value, passwordRef.current.value);
+    } catch {
+      setError("Could not create an account!");
+      setLoading(false);
+    }
   }
   return (
     <>
       <Card>
         <Card.Body>
           <h2 className="text-center mb-4">Sign Up</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
+          {currentUser && (
+            <Alert variant="danger">Logged in as "{currentUser.email}"</Alert>
+          )}
           <Form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label htmlFor="EmailLabel">Email</label>
+              <label htmlFor="EmailLabel">Email </label>
               <input
                 type="email"
                 className="form-control"

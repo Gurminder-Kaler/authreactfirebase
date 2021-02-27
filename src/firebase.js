@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 {
-  console.log(JSON.stringify(process.env));
+  console.log("Firebase Connected");
 }
 const app = firebase.initializeApp({
   apiKey: "AIzaSyAu7YLceJfd-s0mkfIrFQ_I94Ih0qiaRGc",
