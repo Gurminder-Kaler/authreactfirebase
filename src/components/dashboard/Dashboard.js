@@ -12,7 +12,7 @@ function Dashboard() {
     setError("");
     try {
       e.preventDefault();
-      history.push("/login");
+      history.push("/signin");
       await logout();
     } catch {
       setError("Failed to logout");
