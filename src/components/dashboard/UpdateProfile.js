@@ -3,34 +3,48 @@ import { Card, Form, Button, Body, Alert } from "react-bootstrap";
 import { useAuth } from "../../contexts/AuthContext";
 import { Link, useHistory } from "react-router-dom";
 
-function SignIn() {
+export default function UpdateProfile() {
   const emailRef = useRef();
   const passwordRef = useRef();
-  const { signin, currentUser } = useAuth();
+  const confirmPasswordRef = useRef();
+  const { currentUser, updateEmail, updatePassword } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const history = useHistory();
+
   async function handleSubmit(e) {
     e.preventDefault();
-    try {
-      setError("");
-      setLoading(true);
-      await signin(emailRef.current.value, passwordRef.current.value);
-      history.push("/dashboard");
-    } catch {
-      setError("User/Credentials Do not match our records!");
-      setLoading(false);
+
+    const promises = [];
+    setLoading(true);
+    setError("");
+    if (emailRef.current.value !== currentUser.email) {
+      promises.push(updateEmail(emailRef.current.value));
     }
+    if (passwordRef.current.value) {
+      promises.push(updatePassword(passwordRef.current.value));
+    }
+
+    Promise.all(promises)
+      .then(() => {
+        history.push("/dashboard");
+      })
+      .catch(() => {
+        setError("Failed to Update the Account");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
   return (
     <>
       <Card>
         <Card.Body>
-          <h2 className="text-center mb-4">Sign In</h2>
+          <h2 className="text-center mb-4">Update Profile</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {/* {currentUser && (
-          <Alert variant="danger">Logged in as "{currentUser.email}"</Alert>
-        )} */}
+            <Alert variant="danger">Logged in as "{currentUser.email}"</Alert>
+          )} */}
           <Form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="EmailLabel">Email </label>
@@ -38,6 +52,7 @@ function SignIn() {
                 type="email"
                 className="form-control"
                 ref={emailRef}
+                defaultValue={currentUser.email}
                 id="EmailLabel"
                 required
                 placeholder="Enter Email"
@@ -50,8 +65,19 @@ function SignIn() {
                 className="form-control"
                 ref={passwordRef}
                 id="PasswordLabel"
-                required
-                placeholder="Enter Password"
+                placeholder="Leave blank to keep the same"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="PasswordConfirmationLabel">
+                Password Confirmation
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                ref={confirmPasswordRef}
+                id="PasswordConfirmationLabel"
+                placeholder="Enter Confirm password"
               />
             </div>
             <button
@@ -59,19 +85,14 @@ function SignIn() {
               type="submit"
               className="btn btn-primary btn-block"
             >
-              Sign In
+              Update
             </button>
             <p>
-              Do not have an account? <Link to="/signup">Sign Up</Link>
+              <Link to="/dashboard">Cancel?</Link>
             </p>
           </Form>
-          <div>
-            <Link to="/forgot-password">Forgot Password ?</Link>
-          </div>
         </Card.Body>
       </Card>
     </>
   );
 }
-
-export default SignIn;

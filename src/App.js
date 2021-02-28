@@ -2,6 +2,8 @@ import logo from "./logo.svg";
 import "./App.css";
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
+import UpdateProfile from "./components/dashboard/UpdateProfile";
+import ForgotPassword from "./components/auth/ForgotPassword";
 import Dashboard from "./components/dashboard/Dashboard";
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -20,6 +22,9 @@ function App() {
             <Switch>
               <Route path="/signup" component={SignUp} />
               <Route path="/signin" exact component={SignIn} />
+              <Route path="/" exact component={SignIn} />
+              <Route path="/forgot-password" exact component={ForgotPassword} />
+              <Route path="/update-profile" exact component={UpdateProfile} />
               <PrivateRoute path="/dashboard" exact component={Dashboard} />
             </Switch>
           </AuthProvider>
